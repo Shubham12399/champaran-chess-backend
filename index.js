@@ -9,7 +9,7 @@ dbconnection();
 
 
 app.use(cors({
-  origin:"https://champaran-chess-academy.netlify.app/"
+  origin:"https://champaran-chess-academy.netlify.app"
 }));
 
 app.get("/" , (req,res) => {

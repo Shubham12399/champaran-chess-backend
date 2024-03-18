@@ -2,14 +2,15 @@ import express from "express";
 import dbconnection from "./database.js";
 import User from "./userModel.js";
 import cors from "cors";
-
+import dotenv from "dotenv";
 const app = express();
+dotenv.config();
 app.use(express.json());
 dbconnection();
 
 
 app.use(cors({
-  origin:"https://champaran-chess-academy.netlify.app"
+  origin:`${process.env.CLIENT_APP_URI}`
 }));
 
 app.get("/" , (req,res) => {

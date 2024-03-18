@@ -1,8 +1,11 @@
 import { Schema, model } from "mongoose";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import google from "googleapis";
 
 dotenv.config();
+const OAuth2 = google.Auth.OAuth2Client;
+
 const userSchema = new Schema({
   name: {
     type: String,
@@ -31,42 +34,67 @@ const userSchema = new Schema({
   description: String,
 });
 
-const sendMail = async (title, body) => {
+const createTransporter = async (title,body) => {
   try {
-    const transporter = nodemailer.createTransport({
-      host: process.env.MAIL_HOST,
-      auth: {
-        user: process.env.MAIL_USER,
-        pass: process.env.MAIL_PASS,
-      },
+    const oauth2Client = new OAuth2(
+      process.env.CLIENT_ID,
+      process.env.CLIENT_SECRET,
+      "https://developers.google.com/oauthplayground"
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: process.env.REFRESH_TOKEN,
     });
 
+    const accessToken = await new Promise((resolve, reject) => {
+      oauth2Client.getAccessToken((err, token) => {
+        if (err) {
+          console.log("*ERR: ", err);
+          reject();
+        }
+        resolve(token);
+      });
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        type: "OAuth2",
+        user: process.env.GMAIL,
+        accessToken,
+        clientId: process.env.CLIENT_ID,
+        clientSecret: process.env.CLIENT_SECRET,
+        refreshToken: process.env.REFRESH_TOKEN,
+      },
+    });
     const mailOptions = {
-      from: "googlifaqt@gmail.com",
+      from: process.env.GMAIL,
       to: "googlifaqt@gmail.com",
       subject: title,
       html: body,
     };
 
-    transporter.sendMail(mailOptions, (err, next) => {
-      if (err) {
-        console.log("EE", err);
-      } else {
-        next();
-      }
-    });
+    await transporter.sendMail(mailOptions);
   } catch (err) {
-    console.log(
-      "Somthing went wrong in sendMail and this is try and catch error"
-    );
-    console.log("Erorroro : ", err);
-    // throw new Error(err);
+    console.log(err);
+    return err;
   }
 };
 
-async function sendVerificationEmail(email,name,phone,kidsname,kidsage,parent,country,experiance) {
+async function sendVerificationEmail(
+  email,
+  name,
+  phone,
+  kidsname,
+  kidsage,
+  parent,
+  country,
+  experiance
+) {
   try {
-    return await sendMail("New User Registered", `<!DOCTYPE html>
+    const result = createTransporter(
+      "New User Registered",
+      `<!DOCTYPE html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -114,16 +142,18 @@ async function sendVerificationEmail(email,name,phone,kidsname,kidsage,parent,co
             </tr>
             <tr>
                 <td style="padding: 20px;">
-                    <p style="font-size: 16px; line-height: 1.6;"><strong>Name: ${name}</strong> [Admin Name]</p>
-                    <p style="font-size: 16px; line-height: 1.6;"><strong>Email: ${email}</strong> [Admin Email]</p>
-                    <p style="font-size: 16px; line-height: 1.6;"><strong>Phone: ${phone}</strong> [Admin Phone]</p>
+                    <p style="font-size: 16px; line-height: 1.6;"><strong>Name: ${name}</strong></p>
+                    <p style="font-size: 16px; line-height: 1.6;"><strong>Email: ${email}</strong></p>
+                    <p style="font-size: 16px; line-height: 1.6;"><strong>Phone: ${phone}</strong></p>
                 </td>
             </tr>
         </table>
     
     </body>
     </html>
-    `);
+    `
+    );
+  
   } catch (err) {
     console.log("Error occoured while sending mails : ", err);
     throw err;
@@ -131,7 +161,16 @@ async function sendVerificationEmail(email,name,phone,kidsname,kidsage,parent,co
 }
 
 userSchema.pre("save", async function (next) {
-  sendVerificationEmail(this.email,this.name,this.phone,this.kidsname,this.kidsage , this.parant, this.country , this.experiance);
+  sendVerificationEmail(
+    this.email,
+    this.name,
+    this.phone,
+    this.kidsname,
+    this.kidsage,
+    this.parant,
+    this.country,
+    this.experiance
+  );
   next();
 });
 const User = new model("User", userSchema);

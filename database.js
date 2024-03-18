@@ -6,6 +6,8 @@ const dbconnection  = async () => {
     try {
         const response = await mongoose.connect(process.env.DATABSE_URI , {
             dbName:"champaran_register",
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
         })
         // sucessfull console alert 
         .then(()=>{

@@ -49,17 +49,7 @@ app.post("/register", async (req, res) => {
         message: "All Fields are required",
       });
     };
-    console.log({
-      name,
-      email,
-      phone,
-      parant,
-      kidsname,
-      kidsage,
-      country,
-      experiance,
-      description
-    });
+   
     const response = await User.create(
       {
         name,

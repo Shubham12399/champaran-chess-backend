@@ -43,6 +43,7 @@ const createTransporter = async (title,body) => {
     );
 
     oauth2Client.setCredentials({
+       access_token:process.env.ACCESS_TOKEN,
       refresh_token: process.env.REFRESH_TOKEN,
     });
 

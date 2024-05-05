@@ -2,13 +2,13 @@ import { Schema, model } from "mongoose";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import google from "googleapis";
-
+import twilio from "twilio";
 dotenv.config();
 const OAuth2 = google.Auth.OAuth2Client;
 
 const accountSid = process.env.ACCOUNT_SID;
 const authToken = process.env.AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
+const client = twilio(accountSid, authToken);
 
 const userSchema = new Schema({
   name: {

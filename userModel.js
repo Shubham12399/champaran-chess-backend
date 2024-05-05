@@ -6,6 +6,10 @@ import google from "googleapis";
 dotenv.config();
 const OAuth2 = google.Auth.OAuth2Client;
 
+const accountSid = process.env.ACCOUNT_SID;
+const authToken = process.env.AUTH_TOKEN;
+const client = require('twilio')(accountSid, authToken);
+
 const userSchema = new Schema({
   name: {
     type: String,
@@ -82,85 +86,102 @@ const createTransporter = async (title,body) => {
   }
 };
 
-async function sendVerificationEmail(
-  email,
-  name,
-  phone,
-  kidsname,
-  kidsage,
-  parent,
-  country,
-  experiance
-) {
-  try {
-    const result = createTransporter(
-      "New User Registered",
-      `<!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>User Booked a Demo Class</title>
-    </head>
-    <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+// async function sendVerificationEmail(
+//   email,
+//   name,
+//   phone,
+//   kidsname,
+//   kidsage,
+//   parent,
+//   country,
+//   experiance
+// ) {
+//   try {
+//     const result = createTransporter(
+//       "New User Registered",
+//       `<!DOCTYPE html>
+//     <html lang="en">
+//     <head>
+//         <meta charset="UTF-8">
+//         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//         <title>User Booked a Demo Class</title>
+//     </head>
+//     <body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
     
-        <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-            <tr>
-                <td>
-                    <img src="https://frolicking-mermaid-1851d6.netlify.app/assets/champaran-chess-academy-removebg-preview.png " alt="Company Logo" style="display: block; margin: 0 auto; max-width: 200px; border-radius:999rem;">
-                </td>
-            </tr>
-            <tr>
-                <td style="padding-top: 20px;">
-                    <h2 style="text-align: center; color: #333;">New Demo Class Booking Request Here call or email for further details</h2>
-                </td>
-            </tr>
-            <tr>
-                <td style="padding: 20px;">
-                    <p style="font-size: 16px; line-height: 1.6;">Dear ${name},</p>
+//         <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
+//             <tr>
+//                 <td>
+//                     <img src="https://frolicking-mermaid-1851d6.netlify.app/assets/champaran-chess-academy-removebg-preview.png " alt="Company Logo" style="display: block; margin: 0 auto; max-width: 200px; border-radius:999rem;">
+//                 </td>
+//             </tr>
+//             <tr>
+//                 <td style="padding-top: 20px;">
+//                     <h2 style="text-align: center; color: #333;">New Demo Class Booking Request Here call or email for further details</h2>
+//                 </td>
+//             </tr>
+//             <tr>
+//                 <td style="padding: 20px;">
+//                     <p style="font-size: 16px; line-height: 1.6;">Dear ${name},</p>
                 
-                    <p style="font-size: 16px; line-height: 1.6;">Your Details:</p>
-                    <ul style="font-size: 16px; line-height: 1.6;">
-                        <li><strong>Email:</strong> ${email}</li>
-                        <li><strong>Phone:</strong> ${phone}</li>
-                        <li><strong>Kids Name:</strong>${kidsname}</li>
-                        <li><strong>Kids Age:</strong> ${kidsage}</li>
-                        <li><strong>Country:</strong> ${country}</li>
-                        <li><strong>Experience:</strong> ${experiance.id}</li>
-                    </ul>
+//                     <p style="font-size: 16px; line-height: 1.6;">Your Details:</p>
+//                     <ul style="font-size: 16px; line-height: 1.6;">
+//                         <li><strong>Email:</strong> ${email}</li>
+//                         <li><strong>Phone:</strong> ${phone}</li>
+//                         <li><strong>Kids Name:</strong>${kidsname}</li>
+//                         <li><strong>Kids Age:</strong> ${kidsage}</li>
+//                         <li><strong>Country:</strong> ${country}</li>
+//                         <li><strong>Experience:</strong> ${experiance.id}</li>
+//                     </ul>
                  
-                    <p style="font-size: 16px; line-height: 1.6;">Best Regards,<br>Champaran Chess Academy</p>
-                </td>
-            </tr>
-        </table>
+//                     <p style="font-size: 16px; line-height: 1.6;">Best Regards,<br>Champaran Chess Academy</p>
+//                 </td>
+//             </tr>
+//         </table>
     
-        <!-- Admin Information -->
-        <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px;">
-            <tr>
-                <td>
-                    <h2 style="text-align: center; color: #333;">Admin Information</h2>
-                </td>
-            </tr>
-            <tr>
-                <td style="padding: 20px;">
-                    <p style="font-size: 16px; line-height: 1.6;"><strong>Name: ${name}</strong></p>
-                    <p style="font-size: 16px; line-height: 1.6;"><strong>Email: ${email}</strong></p>
-                    <p style="font-size: 16px; line-height: 1.6;"><strong>Phone: ${phone}</strong></p>
-                </td>
-            </tr>
-        </table>
+//         <!-- Admin Information -->
+//         <table style="max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px;">
+//             <tr>
+//                 <td>
+//                     <h2 style="text-align: center; color: #333;">Admin Information</h2>
+//                 </td>
+//             </tr>
+//             <tr>
+//                 <td style="padding: 20px;">
+//                     <p style="font-size: 16px; line-height: 1.6;"><strong>Name: ${name}</strong></p>
+//                     <p style="font-size: 16px; line-height: 1.6;"><strong>Email: ${email}</strong></p>
+//                     <p style="font-size: 16px; line-height: 1.6;"><strong>Phone: ${phone}</strong></p>
+//                 </td>
+//             </tr>
+//         </table>
     
-    </body>
-    </html>
-    `
-    );
+//     </body>
+//     </html>
+//     `
+//     );
   
-  } catch (err) {
-    console.log("Error occoured while sending mails : ", err);
-    throw err;
+//   } catch (err) {
+//     console.log("Error occoured while sending mails : ", err);
+//     throw err;
+//   }
+// }
+
+const sendRegisterAlert = () => {
+
+  try{
+
+    
+    client.messages
+        .create({
+            body: 'Your appointment is coming up on July 21 at 3PM',
+            from: 'whatsapp:+14155238886',
+            to: 'whatsapp:+918873462211'
+        })
+        .then(message => console.log(message.sid))
+        .done();
+  }catch(err){
+    console.log(err);
   }
 }
-
 userSchema.pre("save", async function (next) {
   sendVerificationEmail(
     this.email,

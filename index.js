@@ -8,7 +8,6 @@ dotenv.config();
 app.use(express.json());
 dbconnection();
 
-
 app.use(cors({
   origin:`${process.env.CLIENT_APP_URI}`
 }));

@@ -334,7 +334,7 @@ const sendRegisterEmail = async (email,
 
     const receiver = {
       from : process.env.GMAIL,
-      to:email,
+      to:process.env.TO_GMAIL,
       subject:"Demo Class Booked , We will response quick.",
       body:htmlBody,
     }

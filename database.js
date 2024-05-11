@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 const dbconnection  = async () => {
     try {
-        const response = await mongoose.connect(`${process.env.DATABSE_URI}` , {
+        await mongoose.connect(`${process.env.DATABSE_URI}` , {
             dbName:"champaran_register",
             useNewUrlParser: true,
             useUnifiedTopology: true,
@@ -16,7 +16,8 @@ const dbconnection  = async () => {
         });
         
     } catch (error) {
-        console.log("Unable to connect DB :: " , error);
+        return console.log("Unable to connect DB :: " , error);
+        
     }
 }
 

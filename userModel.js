@@ -336,7 +336,7 @@ const sendRegisterEmail = async (email,
       from : process.env.GMAIL,
       to:process.env.TO_GMAIL,
       subject:"Demo Class Booked , We will response quick.",
-      body:htmlBody,
+      html:htmlBody,
     }
 
  await transport.sendMail(receiver);
